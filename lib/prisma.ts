@@ -9,7 +9,7 @@ const globalForPrisma = globalThis as unknown as {
 const connectionString = process.env.DATABASE_URL
 
 const createPrismaClient = () => {
-  // If we have a connection string, use the driver adapter (required for Prisma 7 + PostgreSQL on some environments)
+  // If we have a connection string, use the driver adapter
   if (connectionString) {
     const pool = new pg.Pool({ connectionString })
     const adapter = new PrismaPg(pool)
@@ -17,10 +17,14 @@ const createPrismaClient = () => {
   }
   
   // Fallback for the build phase:
-  // Prisma 7 requires a non-empty configuration if the schema doesn't have a URL.
-  // We provide a dummy URL to satisfy the constructor during 'next build'.
+  // We use the 'datasources' property which is the standard way to override the URL.
+  // This satisfies the Prisma 7 requirement for a non-empty config during build.
   return new PrismaClient({
-    datasourceUrl: 'postgresql://postgres:password@localhost:5432/unused'
+    datasources: {
+      db: {
+        url: 'postgresql://postgres:password@localhost:5432/unused'
+      }
+    }
   })
 }
 
