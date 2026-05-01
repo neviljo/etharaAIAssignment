@@ -23,7 +23,7 @@ A full-stack web application for managing projects and tasks with team collabora
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 20.19+
 - npm or yarn
 
 ### Installation
