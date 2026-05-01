@@ -8,17 +8,13 @@ const globalForPrisma = globalThis as unknown as {
 
 const connectionString = process.env.DATABASE_URL
 
-if (!connectionString) {
-  // In development, we might not have DATABASE_URL set yet
-  if (process.env.NODE_ENV === 'production') {
-    throw new Error('DATABASE_URL is not set')
-  }
-}
-
 const createPrismaClient = () => {
+  // If we don't have a connection string, return a basic client.
+  // This prevents the build from crashing if the DB is not yet connected.
   if (!connectionString) {
     return new PrismaClient()
   }
+  
   const pool = new pg.Pool({ connectionString })
   const adapter = new PrismaPg(pool)
   return new PrismaClient({ adapter })
