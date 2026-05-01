@@ -9,24 +9,19 @@ const globalForPrisma = globalThis as unknown as {
 const connectionString = process.env.DATABASE_URL
 
 const createPrismaClient = () => {
-  // If we have a connection string, use the driver adapter
+  // 1. If we have a real connection string, use the driver adapter (Production/Local Runtime)
   if (connectionString) {
     const pool = new pg.Pool({ connectionString })
     const adapter = new PrismaPg(pool)
     return new PrismaClient({ adapter })
   }
   
-  // Fallback for the build phase:
-  // We use 'as any' here because TypeScript's generated definitions for Prisma 7 
-  // are being extremely restrictive in this environment, even though Prisma 
-  // requires a non-empty object during initialization when the URL isn't in the schema.
+  // 2. Fallback for the build phase (Next.js 'next build'):
+  // Prisma 7 MANDATES either 'adapter' or 'accelerateUrl'.
+  // We provide a dummy accelerateUrl to satisfy the constructor and prevent crashes.
   return new PrismaClient({
-    datasources: {
-      db: {
-        url: 'postgresql://postgres:password@localhost:5432/unused'
-      }
-    }
-  } as any)
+    accelerateUrl: 'prisma://dummy-url-for-build-phase'
+  })
 }
 
 export const prisma = globalForPrisma.prisma ?? createPrismaClient()
