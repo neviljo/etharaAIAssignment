@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Team Task Manager
+
+A full-stack web application for managing projects and tasks with team collaboration. Built with Next.js, TypeScript, Tailwind CSS, Prisma, and SQLite.
+
+## Features
+
+- User authentication (Signup/Login)
+- Project management
+- Task creation, assignment, and status tracking
+- Role-based access control (Admin/Member)
+- Dashboard with task overview
+- RESTful APIs
+
+## Tech Stack
+
+- **Frontend:** Next.js 16, React, TypeScript, Tailwind CSS
+- **Backend:** Next.js API Routes
+- **Database:** SQLite with Prisma ORM
+- **Authentication:** NextAuth.js
+- **Deployment:** Railway (planned)
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Node.js 18+
+- npm or yarn
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Installation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. Set up the database:
+   ```bash
+   npx prisma generate
+   npx prisma migrate dev --name init
+   ```
 
-## Learn More
+4. Run the development server:
+   ```bash
+   npm run dev
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Usage
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Sign up for a new account or log in.
+2. Create projects (Admin role required).
+3. Add team members to projects.
+4. Create and assign tasks.
+5. Track task progress on the dashboard.
 
-## Deploy on Vercel
+## API Endpoints
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `POST /api/auth/signup` - User registration
+- `POST /api/auth/[...nextauth]` - Authentication
+- `GET /api/tasks` - Get user's tasks
+- `POST /api/tasks` - Create a new task
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Database Schema
+
+- Users (id, email, password, name, role)
+- Projects (id, name, description, ownerId, members)
+- Tasks (id, title, description, status, assignedToId, projectId, dueDate)
+
+## Deployment
+
+This app is designed to be deployed on Railway. For production, switch to PostgreSQL and update the database configuration.
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
+
+## License
+
+MIT License

@@ -1,5 +1,10 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# Environment variables
+.env
+.env.local
+.env.*.local
+
 # dependencies
 /node_modules
 /.pnp
@@ -28,6 +33,17 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# SQLite database (local development only)
+*.db
+*.db-shm
+*.db-wal
+
+# Prisma
+/prisma/migrations/
+
+# Railway
+.railway/
 .pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
@@ -39,3 +55,5 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/app/generated/prisma
