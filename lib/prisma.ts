@@ -9,15 +9,19 @@ const globalForPrisma = globalThis as unknown as {
 const connectionString = process.env.DATABASE_URL
 
 const createPrismaClient = () => {
-  // If we don't have a connection string, return a basic client.
-  // This prevents the build from crashing if the DB is not yet connected.
-  if (!connectionString) {
-    return new PrismaClient()
+  // If we have a connection string, use the driver adapter (required for Prisma 7 + PostgreSQL on some environments)
+  if (connectionString) {
+    const pool = new pg.Pool({ connectionString })
+    const adapter = new PrismaPg(pool)
+    return new PrismaClient({ adapter })
   }
   
-  const pool = new pg.Pool({ connectionString })
-  const adapter = new PrismaPg(pool)
-  return new PrismaClient({ adapter })
+  // Fallback for the build phase:
+  // Prisma 7 requires a non-empty configuration if the schema doesn't have a URL.
+  // We provide a dummy URL to satisfy the constructor during 'next build'.
+  return new PrismaClient({
+    datasourceUrl: 'postgresql://postgres:password@localhost:5432/unused'
+  })
 }
 
 export const prisma = globalForPrisma.prisma ?? createPrismaClient()
