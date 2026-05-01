@@ -4,7 +4,8 @@ import bcrypt from "bcryptjs"
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password, name } = await request.json()
+    const body = await request.json()
+    const { email, password, name } = body
 
     if (!email || !password || !name) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 })
@@ -25,12 +26,19 @@ export async function POST(request: NextRequest) {
         email,
         password: hashedPassword,
         name,
-        role: "MEMBER" // default
+        role: "MEMBER"
       }
     })
 
-    return NextResponse.json({ message: "User created", user: { id: user.id, email: user.email, name: user.name } })
-  } catch {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    return NextResponse.json({ 
+      message: "User created", 
+      user: { id: user.id, email: user.email, name: user.name } 
+    })
+  } catch (error: any) {
+    console.error("Signup error details:", error)
+    return NextResponse.json({ 
+      error: "Internal server error", 
+      details: error.message 
+    }, { status: 500 })
   }
 }

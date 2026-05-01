@@ -9,19 +9,21 @@ const globalForPrisma = globalThis as unknown as {
 const connectionString = process.env.DATABASE_URL
 
 const createPrismaClient = () => {
-  // 1. If we have a real connection string, use the driver adapter (Production/Local Runtime)
+  // If we have a connection string, use the driver adapter
   if (connectionString) {
-    const pool = new pg.Pool({ connectionString })
+    // We add ssl configuration which is often required for cloud databases like Railway's Postgres
+    const pool = new pg.Pool({ 
+      connectionString,
+      ssl: connectionString.includes('localhost') ? false : { rejectUnauthorized: false }
+    })
     const adapter = new PrismaPg(pool)
     return new PrismaClient({ adapter })
   }
   
-  // 2. Fallback for the build phase (Next.js 'next build'):
-  // Prisma 7 MANDATES either 'adapter' or 'accelerateUrl'.
-  // We provide a dummy accelerateUrl to satisfy the constructor and prevent crashes.
+  // Fallback for the build phase
   return new PrismaClient({
     accelerateUrl: 'prisma://dummy-url-for-build-phase'
-  })
+  } as any)
 }
 
 export const prisma = globalForPrisma.prisma ?? createPrismaClient()
